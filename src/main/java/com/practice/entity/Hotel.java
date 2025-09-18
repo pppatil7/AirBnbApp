@@ -7,7 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -24,11 +25,15 @@ public class Hotel {
 
     private String city;
 
-    @Column(columnDefinition = "TEXT")
-    private String[] photos;
+    @ElementCollection
+    @CollectionTable(name = "hotel_photos",
+            joinColumns = @JoinColumn(name = "hotel_id"))
+    private Set<String> photos = new HashSet<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String[] amenities;
+    @ElementCollection
+    @CollectionTable(name = "hotel_amenities",
+            joinColumns = @JoinColumn(name = "hotel_id"))
+    private Set<String> amenities = new HashSet<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -41,5 +46,8 @@ public class Hotel {
 
     @Column(nullable = false)
     private boolean active;
+
+    @ManyToOne
+    private User owner;
 
 }

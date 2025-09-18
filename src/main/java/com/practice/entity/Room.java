@@ -9,6 +9,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,7 +21,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;
 
@@ -29,11 +31,15 @@ public class Room {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal basePrice;
 
-    @Column(columnDefinition = "TEXT")
-    private String[] photos;
+    @ElementCollection
+    @CollectionTable(name = "room_photos",
+            joinColumns = @JoinColumn(name = "room_id"))
+    private Set<String> photos = new HashSet<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String[] amenities;
+    @ElementCollection
+    @CollectionTable(name = "room_amenities",
+            joinColumns = @JoinColumn(name = "room_id"))
+    private Set<String> amenities = new HashSet<>();
 
     @Column(nullable = false)
     private Integer totalCount;
