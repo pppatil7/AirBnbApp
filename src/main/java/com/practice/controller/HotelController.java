@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class HotelController {
 
-
     private final HotelService hotelService;
-
 
     @PostMapping
     public ResponseEntity<HotelDto> createNewHotel(@RequestBody HotelDto hotelDto) {
@@ -29,6 +27,18 @@ public class HotelController {
     public ResponseEntity<HotelDto> getHotelById(@PathVariable Long hotelId) {
         HotelDto hotelDto = hotelService.getHotelById(hotelId);
         return ResponseEntity.ok(hotelDto);
+    }
+
+    @PutMapping("/{hotelId}")
+    public ResponseEntity<HotelDto> updateHotelById(@PathVariable Long hotelId, @RequestBody HotelDto hotelDto) {
+        HotelDto hotel = hotelService.updateHotelById(hotelId, hotelDto);
+        return ResponseEntity.ok(hotel);
+    }
+
+    @DeleteMapping("/{hotelId}")
+    public ResponseEntity<Void> deleteHotelById(@PathVariable Long hotelId) {
+        hotelService.deleteHotelById(hotelId);
+        return ResponseEntity.noContent().build();
     }
 
 
