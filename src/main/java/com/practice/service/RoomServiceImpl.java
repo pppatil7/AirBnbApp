@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,16 +39,34 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<RoomDto> getAllRoomsInHotel(Long hotelId) {
-        return List.of();
+        log.info("Getting All rooms in hotel with ID: {}", hotelId);
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + hotelId));
+        return hotel.getRooms()
+                .stream()
+                .map((room) -> modelMapper.map(room, RoomDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public RoomDto getRoomById(Long roomId) {
-        return null;
+        log.info("Getting the room with ID: {}", roomId);
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with ID: " + roomId));
+        return modelMapper.map(room, RoomDto.class);
     }
 
     @Override
     public void deleteRoomById(Long roomId) {
+        log.info("Deleting the room with ID: {}", roomId);
+        boolean exists = roomRepository.existsById(roomId);
+        if (!exists) {
+            throw new ResourceNotFoundException("Room not found with ID: " + roomId);
+        }
+
+        roomRepository.deleteById(roomId);
+
+        //TODO: delete all future inventory for this room
 
     }
 }

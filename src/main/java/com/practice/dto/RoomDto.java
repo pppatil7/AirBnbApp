@@ -3,6 +3,7 @@ package com.practice.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Data
 public class RoomDto {
@@ -10,8 +11,8 @@ public class RoomDto {
     private Long id;
     private String type;
     private BigDecimal basePrice;
-    private String[] photos;
-    private String[] amenities;
+    private Set<String> photos;
+    private Set<String> amenities;
     private Integer totalCount;
     private Integer capacity;
 
