@@ -2,8 +2,10 @@ package com.practice.service;
 
 import com.practice.dto.HotelDto;
 import com.practice.entity.Hotel;
+import com.practice.entity.Room;
 import com.practice.exception.ResourceNotFoundException;
 import com.practice.repository.HotelRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 public class HotelServiceImpl implements HotelService {
 
     private final HotelRepository hotelRepository;
+
+    private final InventoryService inventoryService;
 
     private final ModelMapper modelMapper;
 
@@ -48,21 +52,31 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    @Transactional
     public void deleteHotelById(Long id) {
-        boolean exists = hotelRepository.existsById(id);
-        if (!exists) throw new ResourceNotFoundException("Hotel not found with ID: " + id);
+        Hotel hotel = hotelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + id));
         hotelRepository.deleteById(id);
-        //TODO: delete the future inventories for this hotel
+        // deleting the future inventories for this hotel
+        for (Room room : hotel.getRooms()) {
+            inventoryService.deleteFutureInventories(room);
+        }
     }
 
-
     @Override
+    @Transactional
     public void activateHotel(Long hotelId) {
         log.info("Activating the hotel with ID: {}", hotelId);
         Hotel hotel = hotelRepository.findById(hotelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + hotelId));
         hotel.setActive(true);
 
-        //TODO: Create inventory for all the rooms for this hotel
+        //Creating inventory for all the rooms for this hotel
+
+        //assuming only to do it once
+
+        for (Room room : hotel.getRooms()) {
+            inventoryService.initializeRoomForAYear(room);
+        }
     }
 }
