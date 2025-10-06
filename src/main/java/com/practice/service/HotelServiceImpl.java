@@ -5,6 +5,7 @@ import com.practice.entity.Hotel;
 import com.practice.entity.Room;
 import com.practice.exception.ResourceNotFoundException;
 import com.practice.repository.HotelRepository;
+import com.practice.repository.RoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,8 @@ public class HotelServiceImpl implements HotelService {
     private final HotelRepository hotelRepository;
 
     private final InventoryService inventoryService;
+
+    private final RoomRepository roomRepository;
 
     private final ModelMapper modelMapper;
 
@@ -56,11 +59,12 @@ public class HotelServiceImpl implements HotelService {
     public void deleteHotelById(Long id) {
         Hotel hotel = hotelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + id));
-        hotelRepository.deleteById(id);
         // deleting the future inventories for this hotel
         for (Room room : hotel.getRooms()) {
-            inventoryService.deleteFutureInventories(room);
+            inventoryService.deleteAllInventories(room);
+            roomRepository.deleteById(room.getId());
         }
+        hotelRepository.deleteById(id);
     }
 
     @Override
