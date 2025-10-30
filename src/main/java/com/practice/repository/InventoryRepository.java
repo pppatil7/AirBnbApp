@@ -29,8 +29,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
             @Param("city") String city,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
-            @Param("numberOfRooms") LocalDate numberOfRooms,
-            @Param("dateCount") Integer dateCount,
+            @Param("numberOfRooms") Integer numberOfRooms,
+            @Param("dateCount") Long dateCount,
             Pageable pageable
     );
 }

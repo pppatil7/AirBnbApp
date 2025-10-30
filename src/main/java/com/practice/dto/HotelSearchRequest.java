@@ -13,7 +13,7 @@ public class HotelSearchRequest {
 
     private LocalDate endDate;
 
-    private Integer roomCount;
+    private Integer roomsCount;
 
     private Integer page = 0;
 
